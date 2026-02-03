@@ -1,8 +1,8 @@
-// if (import.meta.hot) {
-//   import.meta.hot.accept(() => {
-//     // console.log("index.ts updated via HMR");
-//   });
-// }
+if (import.meta.hot) {
+  import.meta.hot.accept(() => {
+    console.log("index.ts updated via HMR");
+  });
+}
 
 import { Assets } from "@/assets/Assets";
 import { V } from "@/lib/vars";
@@ -26,10 +26,34 @@ function animate() {
    * source: where on sprite is character located
    * destination: where on canvas character has to show
    */
+
+  /**
+   * frameX is used for staggering as well as animation. So there is a formula already for this
+   * @formula = Math.floor(gameFrame / staggerFrames) % frames_of_current_action
+   */
+  //   ctx?.drawImage(
+  //     PLAYER_SPRITE,
+  //     V.frameX * V.SPRITE_WIDTH,
+  //     V.frameY * V.SPRITE_HEIGHT,
+  //     V.SPRITE_WIDTH,
+  //     V.SPRITE_HEIGHT,
+  //     0,
+  //     0,
+  //     V.SPRITE_WIDTH,
+  //     V.SPRITE_HEIGHT,
+  //   );
+
+  //   if (V.gameFrame % V.staggerFrame === 0) {
+  //     if (V.frameX < 6) V.frameX++;
+  //     else V.frameX = 0;
+  //   }
+
+  let position = Math.floor(V.gameFrame / V.staggerFrame) % 5;
+  V.frameX = position * V.SPRITE_WIDTH;
   ctx?.drawImage(
     PLAYER_SPRITE,
-    V.FRAME_X * V.SPRITE_WIDTH,
-    V.FRAME_Y * V.SPRITE_HEIGHT,
+    V.frameX,
+    V.frameY * V.SPRITE_HEIGHT,
     V.SPRITE_WIDTH,
     V.SPRITE_HEIGHT,
     0,
@@ -38,12 +62,7 @@ function animate() {
     V.SPRITE_HEIGHT,
   );
 
-  if (V.GAME_FRAME % V.STAGGER_FRAME === 0) {
-    if (V.FRAME_X < 6) V.FRAME_X++;
-    else V.FRAME_X = 0;
-  }
-
-  V.GAME_FRAME++;
+  V.gameFrame++;
   requestAnimationFrame(animate);
 }
 animate();
