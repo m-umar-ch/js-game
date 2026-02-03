@@ -4,7 +4,7 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun index.html --watch"
+    "dev": "bun index.html --watch --no-fork"
   },
   "devDependencies": {
     "@types/bun": "latest"
