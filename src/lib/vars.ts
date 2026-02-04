@@ -4,6 +4,21 @@ if (import.meta.hot) {
   });
 }
 
+const animationStates = [
+  { name: "idle", frames: 7 },
+  { name: "jump", frames: 7 },
+  { name: "fall", frames: 7 },
+  { name: "run", frames: 9 },
+  { name: "dizzy", frames: 11 },
+  { name: "sit", frames: 5 },
+  { name: "roll", frames: 7 },
+  { name: "bite", frames: 7 },
+  { name: "KO", frames: 12 },
+  { name: "getHit", frames: 4 },
+] as const;
+type AnimationName = (typeof animationStates)[number]["name"];
+type SpriteAnimations = Record<AnimationName, { loc: { x: number; y: number }[] }>;
+
 /**
  * @info Global constants and derived values
  * - constants in caps
@@ -17,42 +32,30 @@ export const V = {
   DOG_SPRITE_COLUMNS: 12,
   DOG_SPRITE_ROWS: 10,
   get SPRITE_WIDTH() {
-    return this.DOG_SPRITE_WIDTH / this.DOG_SPRITE_COLUMNS + 2;
+    return this.DOG_SPRITE_WIDTH / this.DOG_SPRITE_COLUMNS + 2; // 2 is arbitrary, just for width adjustment
   },
   get SPRITE_HEIGHT() {
     return this.DOG_SPRITE_HEIGHT / this.DOG_SPRITE_ROWS;
   },
 
   gameFrame: 0,
-  staggerFrame: 4,
+  staggerFrame: 5,
   frameX: 0,
   frameY: 0,
+  playerState: "fall" as AnimationName,
 };
 
-const spriteAnimations: any = [];
-const animationStates = [
-  { name: "idle", frames: 7 },
-  { name: "jump", frames: 7 },
-  { name: "fall", frames: 9 },
-  { name: "run", frames: 9 },
-  { name: "dizzy", frames: 11 },
-  { name: "sit", frames: 5 },
-  { name: "roll", frames: 7 },
-  { name: "bite", frames: 7 },
-  { name: "KO", frames: 12 },
-  { name: "getHit", frames: 4 },
-] as const;
+const spriteAnimations: SpriteAnimations = {} as SpriteAnimations;
 
 animationStates.forEach((item, idx) => {
-  let frames: { loc: { x: number; y: number }[] } = {
-    loc: [],
-  };
-  for (let j = 0; j < item.frames; j++) {
-    let positionX = j * V.SPRITE_WIDTH;
-    let positionY = idx * V.SPRITE_HEIGHT;
-    frames.loc.push({ x: positionX, y: positionY });
+  spriteAnimations[item.name] = { loc: [] };
+
+  for (let i = 0; i < item.frames; i++) {
+    spriteAnimations[item.name].loc.push({
+      x: V.SPRITE_WIDTH * i,
+      y: V.SPRITE_HEIGHT * idx,
+    });
   }
-  spriteAnimations[item.name] = frames;
 });
 
-// 38:58
+export { spriteAnimations, type AnimationName, animationStates };

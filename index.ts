@@ -5,9 +5,9 @@ if (import.meta.hot) {
 }
 
 import { Assets } from "@/assets/Assets";
-import { V } from "@/lib/vars";
+import { animationStates, spriteAnimations, V, type AnimationName } from "@/lib/vars";
 
-const ELEMENTS_ID = { Canvas1: "canvas1" } as const;
+const ELEMENTS_ID = { Canvas1: "canvas1", PlayerStateDropdown: "playerState" } as const;
 type HTML_ELEMENTS = keyof typeof ELEMENTS_ID;
 
 const canvas = document.getElementById(ELEMENTS_ID.Canvas1) as HTMLCanvasElement;
@@ -48,12 +48,13 @@ function animate() {
   //     else V.frameX = 0;
   //   }
 
-  let position = Math.floor(V.gameFrame / V.staggerFrame) % 5;
+  let position = Math.floor(V.gameFrame / V.staggerFrame) % spriteAnimations[V.playerState].loc.length;
   V.frameX = position * V.SPRITE_WIDTH;
+  V.frameY = spriteAnimations[V.playerState].loc[position]?.y || 0;
   ctx?.drawImage(
     PLAYER_SPRITE,
     V.frameX,
-    V.frameY * V.SPRITE_HEIGHT,
+    V.frameY,
     V.SPRITE_WIDTH,
     V.SPRITE_HEIGHT,
     0,
@@ -66,3 +67,20 @@ function animate() {
   requestAnimationFrame(animate);
 }
 animate();
+
+document.addEventListener("DOMContentLoaded", e => {
+  const options = animationStates
+    .map(
+      (item, idx) =>
+        `<option key="${idx}" value="${item.name}">${item.name[0]?.toUpperCase() + item.name.slice(1)}</option>`,
+    )
+    .join();
+  const select = document.getElementById(ELEMENTS_ID.PlayerStateDropdown);
+  if (select) {
+    select.innerHTML = options;
+    select.addEventListener("change", e => {
+      const target = e.target as HTMLSelectElement;
+      V.playerState = target.value as AnimationName;
+    });
+  }
+});
